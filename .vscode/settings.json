@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "C:\\Users\\ansalemo\\.virtualenvs\\FastAPIExponentialBackoff-ihm2UdIM\\Scripts\\python.exe"
+    "python.pythonPath": "C:\\Users\\ansalemo\\.virtualenvs\\FastAPIExponentialBackoff-ihm2UdIM\\Scripts\\python.exe",
+    "python.formatting.provider": "black"
 }
