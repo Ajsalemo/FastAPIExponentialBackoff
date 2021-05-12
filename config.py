@@ -6,17 +6,17 @@ from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base()
 
-# Postgres environment variables
-POSTGRES_USERNAME = os.environ['POSTGRES_USERNAME']
-POSTGRES_PASSWORD = os.environ['POSTGRES_PASSWORD']
-POSTGRES_PORT = os.environ['POSTGRES_PORT']
-POSTGRES_HOST = os.environ['POSTGRES_HOST']
-POSTGRES_DATABASE = os.environ['POSTGRES_DATABASE']
+# MySQL environment variables
+MYSQL_USERNAME = os.environ['MYSQL_USERNAME']
+MYSQL_PASSWORD = os.environ['MYSQL_PASSWORD']
+MYSQL_PORT = os.environ['MYSQL_PORT']
+MYSQL_HOST = os.environ['MYSQL_HOST']
+MYSQL_DATABASE = os.environ['MYSQL_DATABASE']
 
 def database_config():
-    # psycopg2
+    # MySQL connection string
     engine = create_engine(
-        f"postgresql://{POSTGRES_USERNAME}@{POSTGRES_HOST}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}.postgres.database.azure.com:{POSTGRES_PORT}/{POSTGRES_DATABASE}",
+        f"mysql://{MYSQL_USERNAME}@{MYSQL_HOST}:{MYSQL_PASSWORD}@{MYSQL_HOST}.mysql.database.azure.com:{MYSQL_PORT}/{MYSQL_DATABASE}",
         # Pre-pings for connections in the pool to ensure that database connectivity is still valid
         # Does the equivalent of sending a SELECT 1
         # https://docs.sqlalchemy.org/en/14/core/pooling.html#disconnect-handling-pessimistic

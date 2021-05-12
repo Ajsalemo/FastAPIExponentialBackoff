@@ -11,6 +11,7 @@ fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 sqlalchemy = "*"
 psycopg2 = "*"
+mysqlclient = "*"
 
 [requires]
 python_version = "3.8"
