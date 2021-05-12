@@ -33,6 +33,7 @@ def retry_with_backoff(f, attempts=5, backoff_in_seconds=1):
                 sleep = backoff_in_seconds * 2 ** attempts + random.uniform(0, 1)
                 time.sleep(sleep)
             else:
+                logging.error("Unable to connect to the database.")
                 raise
 
 
@@ -40,8 +41,8 @@ def retry_with_backoff(f, attempts=5, backoff_in_seconds=1):
 async def root():
     def select_all():
         todo = session.query(Todo).all()
-        print(todo)
-        return todo
+        for t in todo:
+            print(t.name)
 
     retry_with_backoff(select_all)
     return {"message": "Hello World"}

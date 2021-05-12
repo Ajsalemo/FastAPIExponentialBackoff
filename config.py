@@ -1,9 +1,17 @@
+import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base()
 
+# Postgres environment variables
+POSTGRES_USERNAME = os.environ['POSTGRES_USERNAME']
+POSTGRES_PASSWORD = os.environ['POSTGRES_PASSWORD']
+POSTGRES_PORT = os.environ['POSTGRES_PORT']
+POSTGRES_HOST = os.environ['POSTGRES_HOST']
+POSTGRES_DATABASE = os.environ['POSTGRES_DATABASE']
 
 def database_config():
     # psycopg2
