@@ -47,6 +47,19 @@ async def root():
         todo = session.query(Todo).all()
         for t in todo:
             print(t.name)
+        session.close()
 
     retry_with_backoff(select_all)
     return {"message": "Hello World"}
+
+# Find a todo by ID
+@app.get("/todo/find/{id}")
+async def find_todo(id: int):
+    def find_by_id():
+        print(id)
+        r = session.query(Todo).filter_by(id=id).first()
+        print(r.name)
+        session.close()
+        
+    retry_with_backoff(find_by_id)
+    return {"message": "test"}
