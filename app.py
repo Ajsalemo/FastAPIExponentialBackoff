@@ -48,24 +48,39 @@ async def root():
 
 @app.get("/api/book/find/all")
 async def root():
-    def select_all():
-        books = session.query(Books).all()
-        for b in books:
-            print(b.book)
-        session.close()
+    async def select_all():
+        books = await session.query(Books).all()
+        all_books = [
+            {
+                "id": b.id,
+                "book": b.book,
+                "description": b.description,
+                "author": b.author,
+            }
+            for b in books
+        ]
+        return {"results": all_books}
 
-    retry_with_backoff(select_all)
-    return {"message": "Hello World"}
+    session.close()
+    return retry_with_backoff(select_all)
 
 
 # Find a todo by ID
 @app.get("/api/book/find/{id}")
 async def find_todo(id: int):
-    def find_by_id():
-        print(id)
-        r = session.query(Books).filter_by(id=id).first()
-        print(r.book)
-        session.close()
+    async def find_by_id():
+        r = await session.query(Books).filter_by(id=id).first()
+        # Check if the ID exists
+        if r is not None:
+            book_by_id = {
+                "id": r.id,
+                "book": r.book,
+                "description": r.description,
+                "author": r.author,
+            }
+            return {"results": book_by_id}
+        # If no book is found with the ID being passed in through params then display an error
+        return {"error": f"No book found with id {id}"}
 
-    retry_with_backoff(find_by_id)
-    return {"message": "test"}
+    session.close()
+    return retry_with_backoff(find_by_id)
