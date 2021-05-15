@@ -6,7 +6,7 @@ import sqlalchemy as SA
 from fastapi import FastAPI
 
 from config import database_config
-from models import Books
+from models import Books, BookValidation
 
 app = FastAPI()
 session = database_config()
@@ -24,7 +24,6 @@ def retry_with_backoff(f):
     while attempts < 5:
         attempts += 1
         try:
-            logging.info("Connecting to MySQL through SQLAlchemy..")
             return f()  # "break" if query was successful and return any results
         except SA.exc.OperationalError as exc:
             if attempts < 5 and exc:
@@ -33,7 +32,7 @@ def retry_with_backoff(f):
                 # Rounding the elapsed time to a whole number
                 elapsed_time = round(sleep)
                 logging.warning(
-                    f" Retry - trying to establish a connection. Attempt {attempts} - elapsed time: {elapsed_time} seconds"
+                    f" Retry - trying to establish a connection. Attempt {attempts} - Retrying in {elapsed_time} seconds."
                 )
                 time.sleep(sleep)
             else:
@@ -47,7 +46,7 @@ async def root():
 
 
 @app.get("/api/book/find/all")
-async def root():
+async def find_all_books():
     async def select_all():
         books = await session.query(Books).all()
         all_books = [
@@ -67,7 +66,7 @@ async def root():
 
 # Find a todo by ID
 @app.get("/api/book/find/{id}")
-async def find_todo(id: int):
+async def find_book(id: int):
     async def find_by_id():
         r = await session.query(Books).filter_by(id=id).first()
         # Check if the ID exists
@@ -84,3 +83,10 @@ async def find_todo(id: int):
 
     session.close()
     return retry_with_backoff(find_by_id)
+
+
+# Add a book
+@app.post("/api/book/add")
+async def add_book(book: BookValidation):
+    print(book)
+    return {"message": "hello"}
