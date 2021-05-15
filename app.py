@@ -3,7 +3,7 @@ import random
 import time
 
 import sqlalchemy as SA
-from fastapi import FastAPI
+from fastapi import FastAPI, Response, status
 
 from config import database_config
 from models import Books, BookValidation
@@ -66,7 +66,7 @@ async def find_all_books():
 
 # Find a todo by ID
 @app.get("/api/book/find/{id}")
-async def find_book(id: int):
+async def find_book(id: int, response: Response):
     def find_by_id():
         r = session.query(Books).filter_by(id=id).first()
         # Check if the ID exists
@@ -79,6 +79,7 @@ async def find_book(id: int):
             }
             return {"results": book_by_id}
         # If no book is found with the ID being passed in through params then display an error
+        response.status_code = status.HTTP_404_NOT_FOUND
         return {"error": f"No book found with id {id}"}
 
     session.close()
@@ -87,7 +88,7 @@ async def find_book(id: int):
 
 # Add a book
 @app.post("/api/book/add")
-async def add_book(book: BookValidation):
+async def add_book(book: BookValidation, response: Response):
     # Add a new book
     new_book = Books(book=book.book, description=book.description, author=book.author)
     session.add(new_book)
@@ -95,4 +96,25 @@ async def add_book(book: BookValidation):
     session.commit()
     session.close()
     # Return the request body that was added to the database
+    # Set the status code to an HTTP 201
+    response.status_code = status.HTTP_201_CREATED
     return {"results": book}
+
+
+# Delete a book
+@app.delete("/api/book/delete/{id}")
+async def delete_book(id: int, response: Response):
+    d = session.query(Books).filter_by(id=id).first()
+
+    def delete_book_by_id():
+        # Find the book by ID
+        if d is not None:
+            session.delete(d)
+            session.commit()
+            return {"results": d}
+        # If no book is found with the ID being passed in through params then display an error
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {"error": f"No book found with id {id}"}
+
+    session.close()
+    return retry_with_backoff(delete_book_by_id)
