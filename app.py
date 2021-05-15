@@ -47,8 +47,8 @@ async def root():
 
 @app.get("/api/book/find/all")
 async def find_all_books():
-    async def select_all():
-        books = await session.query(Books).all()
+    def select_all():
+        books = session.query(Books).all()
         all_books = [
             {
                 "id": b.id,
@@ -67,8 +67,8 @@ async def find_all_books():
 # Find a todo by ID
 @app.get("/api/book/find/{id}")
 async def find_book(id: int):
-    async def find_by_id():
-        r = await session.query(Books).filter_by(id=id).first()
+    def find_by_id():
+        r = session.query(Books).filter_by(id=id).first()
         # Check if the ID exists
         if r is not None:
             book_by_id = {
@@ -88,5 +88,11 @@ async def find_book(id: int):
 # Add a book
 @app.post("/api/book/add")
 async def add_book(book: BookValidation):
-    print(book)
-    return {"message": "hello"}
+    # Add a new book
+    new_book = Books(book=book.book, description=book.description, author=book.author)
+    session.add(new_book)
+    # Commit it to the database
+    session.commit()
+    session.close()
+    # Return the request body that was added to the database
+    return {"results": book}

@@ -13,7 +13,7 @@ class Books(Base):
     description = Column("description")
 
 
-# FastAPI model for validation
+# FastAPI model for validation 
 class BookValidation(BaseModel):
     book: str
     description: str
