@@ -40,6 +40,9 @@ def retry_with_backoff(f):
                 raise
 
 
+def return_id(id):
+    return session.query(Books).filter_by(id=id).first()
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
@@ -67,8 +70,9 @@ async def find_all_books():
 # Find a todo by ID
 @app.get("/api/book/find/{id}")
 async def find_book(id: int, response: Response):
+    r = return_id(id)
+
     def find_by_id():
-        r = session.query(Books).filter_by(id=id).first()
         # Check if the ID exists
         if r is not None:
             book_by_id = {
@@ -104,7 +108,7 @@ async def add_book(book: BookValidation, response: Response):
 # Delete a book
 @app.delete("/api/book/delete/{id}")
 async def delete_book(id: int, response: Response):
-    d = session.query(Books).filter_by(id=id).first()
+    d = return_id(id)
 
     def delete_book_by_id():
         # Find the book by ID
@@ -118,3 +122,27 @@ async def delete_book(id: int, response: Response):
 
     session.close()
     return retry_with_backoff(delete_book_by_id)
+
+
+# Update a book
+@app.put("/api/book/update/{id}")
+async def update_book(id: int, book: BookValidation,  response: Response):
+    def update_book_by_id():
+        # Add a new book
+        u = session.query(Books).filter_by(id=id)
+        updated_book = {
+            "book": book.book,
+            "description": book.description, 
+            "author": book.author
+        }
+        if u is not None:
+            u.update(updated_book)
+            session.commit()
+            return {"results": book}
+        # If no book is found with the ID being passed in through params then display an error
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {"error": f"No book found with id {id}"}
+
+
+    session.close()
+    return retry_with_backoff(update_book_by_id)
