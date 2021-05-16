@@ -8,7 +8,7 @@ A CRUD based REST API that connects to an Azure Database for MySQL instance. The
 
 ### Endpoints
 - `"/"` - GET request. Root path.
-- `"/api/book/find/all"` - GE request. Finds all records.
+- `"/api/book/find/all"` - GET request. Finds all records.
 - `"/api/book/find/{id}"` - GET request. Accepts an integer to look up its associated record.
 - `"/api/book/add"` - POST request. Accepts a request body in JSON format to add a new record.
 - `"/api/book/delete/{id}"` - DELETE request. Accepts an integer to look up and delete its associated record.
