@@ -93,16 +93,19 @@ async def find_book(id: int, response: Response):
 # Add a book
 @app.post("/api/book/add")
 async def add_book(book: BookValidation, response: Response):
-    # Add a new book
-    new_book = Books(book=book.book, description=book.description, author=book.author)
-    session.add(new_book)
-    # Commit it to the database
-    session.commit()
+    def add_new_book():
+        # Add a new book
+        new_book = Books(book=book.book, description=book.description, author=book.author)
+        session.add(new_book)
+        # Commit it to the database
+        session.commit()
+        # Return the request body that was added to the database
+        # Set the status code to an HTTP 201
+        response.status_code = status.HTTP_201_CREATED
+        return {"results": book}
+
     session.close()
-    # Return the request body that was added to the database
-    # Set the status code to an HTTP 201
-    response.status_code = status.HTTP_201_CREATED
-    return {"results": book}
+    return retry_with_backoff(add_new_book)
 
 
 # Delete a book
