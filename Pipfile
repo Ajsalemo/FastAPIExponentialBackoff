@@ -12,6 +12,7 @@ uvicorn = {extras = ["standard"], version = "*"}
 sqlalchemy = "*"
 mysqlclient = "*"
 pipenv-to-requirements = "*"
+memory-profiler = "*"
 
 [requires]
 python_version = "3.8"

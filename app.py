@@ -39,14 +39,13 @@ def retry_with_backoff(f):
                 logging.error("Unable to connect to the database.")
                 raise
 
-
-def return_id(id):
+# Created a reusable function for ID getters
+async def return_id(id):
     return session.query(Books).filter_by(id=id).first()
 
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
-
 
 @app.get("/api/book/find/all")
 async def find_all_books():
